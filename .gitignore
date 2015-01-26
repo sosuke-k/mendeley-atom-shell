@@ -1,0 +1,11 @@
+# gulp-atom
+cache/
+release/
+
+# npm
+node_modules/
+
+# src
+src/node_modules/
+src/bower_components/
+

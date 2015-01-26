@@ -1,0 +1,67 @@
+<html>
+  <head>
+    <title>Novelty</title>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <script type="text/javascript">
+      var ipc = require('ipc');
+    </script>
+    <script src="bower_components/webcomponentsjs/webcomponents.js"></script>
+    <link rel="import" href="bower_components/paper-progress/paper-progress.html">
+    <style>
+      html,body {
+        height: 100%;
+        margin: 0;
+        background-color: #E5E5E5;
+      }
+      paper-progress {
+        width: 100%;
+        position: absolute;
+        top: 0px;
+      }
+    </style>
+  </head>
+  <body>
+    <paper-progress value="0" indeterminate>
+      <script type="text/javascript">
+        function startProgress() {
+          document.querySelector('paper-progress').indeterminate = true;
+        }
+        function stopProgress() {
+          document.querySelector('paper-progress').indeterminate = false;
+        }
+      </script>
+    </paper-progress>
+    <div style="display: block;" id="mendeley-web-view-container">
+      <webview id="mendeley-web-view" src="https://api.mendeley.com/oauth/authorize?client_id=898&redirect_uri=http:%2F%2Fwww.unzoning.com%2Fmendeley%2Findex.html&response_type=token&scope=all" autosize="on" minwidth="350" minheight="350"></webview>
+      <script type="text/javascript">
+        var webview = document.getElementById("mendeley-web-view");
+        // var webview = $("#mendeley-web-view");   // $ cannot get WebView DOM
+        webview.addEventListener("did-start-loading", function() {
+          startProgress();
+        });
+        webview.addEventListener("did-stop-loading", function() {
+          stopProgress();
+          var loadUrl = webview.getUrl();
+          console.log('loaded url:' + loadUrl);
+          // http://www.unzoning.com/mendeley/index.html#access_token={access_token}
+          if (loadUrl.indexOf("http://www.unzoning.com") == 0) {
+            var params = {}, queryString = loadUrl.substring(loadUrl.indexOf('#') + 1),
+                regex = /([^&=]+)=([^&]*)/g, m;
+            while (m = regex.exec(queryString)) {
+              params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+            }
+            console.log(params["access_token"]);
+            localStorage["mendeley-access-token"] = params["access_token"];
+            console.log(localStorage["mendeley-access-token"]);
+            // ipc.send('result-access-token', 'success');
+          }
+        });
+      </script>
+    </div>
+    <script type="text/javascript">
+      addEventListener('polymer-ready', function() {
+        console.log("polymer-ready");
+      });
+    </script>
+  </body>
+</html>

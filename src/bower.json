@@ -1,0 +1,23 @@
+{
+  "name": "src",
+  "main": "index.js",
+  "version": "0.0.0",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#~0.5.4",
+    "core-icon-button": "Polymer/core-icon-button#~0.5.4",
+    "core-dropdown-menu": "Polymer/core-dropdown-menu#~0.5.4",
+    "paper-progress": "Polymer/paper-progress#~0.5.4",
+    "core-overlay": "Polymer/core-overlay#~0.5.4",
+    "core-transition": "Polymer/core-transition#~0.5.4",
+    "core-scaffold": "Polymer/core-scaffold#~0.5.4",
+    "core-ajax": "Polymer/core-ajax#~0.5.4"
+  }
+}
