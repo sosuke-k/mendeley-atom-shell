@@ -9,3 +9,6 @@ node_modules/
 src/node_modules/
 src/bower_components/
 
+# api (ignore only my mendeley documents)
+src/api/my_documents.json
+
