@@ -1,0 +1,31 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="document-service.html">
+<link rel="import" href="document-card.html">
+
+<polymer-element name="document-list" attributes="show" noscript>
+  <template>
+    <style>
+    :host {
+      display: block;
+      width: 100%;
+    }
+    document-card {
+      margin-bottom: 30px;
+    }
+    </style>
+
+    <document-service id="service" documents="{{documents}}">
+    </document-service>
+
+    <div layout vertical center>
+
+      <template repeat="{{document in documents}}">
+        <document-card>
+          <h2>{{document.title}}</h2>
+          <author>{{document.author}}</author>
+        </document-card>
+      </template>
+
+    </div>
+  </template>
+</polymer-element>
