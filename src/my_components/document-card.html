@@ -1,38 +1,55 @@
-<link rel="import" href="./bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/polymer/polymer.html">
 
-<polymer-element name="document-card">
+<polymer-element name="document-card" noscript>
   <template>
     <style>
     :host {
       display: block;
       position: relative;
       background-color: pink;
-      padding: 10px;
       width: 100%;
+      padding-bottom: 10px;
+      margin-bottom: 5px;
     }
-    h2 {
+    polyfill-next-selector { content: 'document-title'; }
+    ::content document-title {
+      display: block;
+      color: blue;
+      margin: 0px 10px;
+      font-size: 1.0rem;
+    }
+    .authors {
+      display: block;
+      width: 100%;
+      text-align: right;
+      margin: 0px -10px;
+    }
+    polyfill-next-selector { content: 'author-first-name'; }
+    .authors ::content author-first-name {
+      color: yellow;
+    }
+    polyfill-next-selector { content: 'author-last-name'; }
+    .authors ::content author-last-name {
+      color: red;
+    }
+    polyfill-next-selector { content: 'year'; }
+    .authors ::content year {
       color: green;
     }
-    /*polyfill-next-selector { content: 'h2'; }*/
-    ::content h2 {
-      color: blue;
-      margin: 0;
-      font-size: 0.8rem;
+    p {
+      padding: 15px;
     }
-    polyfill-next-selector { content: 'author'; }
-    ::content author{
-      display: inline;
-      color: yellow;
-      margin: 0;
-      font-size: 0.5rem;
+    polyfill-next-selector { content: 'abstract'; }
+    p ::content abstract {
+      font-size: 0.7rem;
     }
     </style>
-    <content select="h2"></content>
-    <content select="author"></content>
-    <h2>Another</h2>
-    <content></content>
+    <content select="document-title"></content>
+    <div class="authors">
+      <content select="author-first-name"></content>
+      <content select="author-last-name"></content>
+      <content select="year"></content>
+    </div>
+    <p><content select="abstract"></content></p>
   </template>
-  <script>
-    Polymer({});
-  </script>
 </polymer-element>

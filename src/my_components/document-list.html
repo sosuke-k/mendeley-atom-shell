@@ -1,4 +1,4 @@
-<link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="document-service.html">
 <link rel="import" href="document-card.html">
 
@@ -21,8 +21,13 @@
 
       <template repeat="{{document in documents}}">
         <document-card>
-          <h2>{{document.title}}</h2>
-          <author>{{document.author}}</author>
+          <document-title>{{document.title}}</document-title>
+          <template repeat="{{author in document.authors}}">
+            <author-first-name>{{author.first_name}}</author-first-name>
+            <author-last-name>{{author.last_name}}</author-last-name>
+          </template>
+          <year>{{document.year}}</year>
+          <abstract>{{document.abstract}}</abstract>
         </document-card>
       </template>
 

@@ -2,13 +2,10 @@
   <head>
     <title>Novelty</title>
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
-    <script type="text/javascript">
-      // var ipc = require('ipc');
-    </script>
     <script src="bower_components/webcomponentsjs/webcomponents.js"></script>
     <link rel="import" href="bower_components/paper-progress/paper-progress.html">
     <link rel="import" href="bower_components/core-scaffold/core-scaffold.html">
-    <link rel="import" href="document-list.html">
+    <link rel="import" href="my_components/document-list.html">
 
     <style>
       html,body {
@@ -34,23 +31,11 @@
       <div tool>Title</div>
       <div>Main content goes here...</div>
     </core-scaffold>
-
-    <!-- <paper-progress value="0" indeterminate>
-      <script type="text/javascript">
-        function startProgress() {
-          document.querySelector('paper-progress').indeterminate = true;
-        }
-        function stopProgress() {
-          document.querySelector('paper-progress').indeterminate = false;
-        }
-      </script>
-    </paper-progress> -->
     
     <script type="text/javascript">
-      // addEventListener('polymer-ready', function() {
-      //   console.log("polymer-ready");
-      //   stopProgress();
-      // });
+      addEventListener('polymer-ready', function() {
+        console.log("polymer-ready");
+      });
     </script>
   </body>
 </html>

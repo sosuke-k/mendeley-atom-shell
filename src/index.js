@@ -26,7 +26,7 @@ ipc.on('result-access-token', function(event, arg) {
   console.log(arg);
   if (arg == 'success') {
   	if (mainWindow != null) {
-  		var loadUrl = 'file://' + __dirname + '/finished/index.html';
+  		var loadUrl = 'file://' + __dirname + '/app.html';
       console.log(loadUrl);
       mainWindow.loadUrl(loadUrl);
   	}
