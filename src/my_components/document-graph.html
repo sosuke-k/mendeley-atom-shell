@@ -1,0 +1,118 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<script src="../vendor/d3.js" charset="utf-8"></script>
+
+<polymer-element name="document-graph" attributes="nodes links">
+	
+  <template>
+    <style>
+      :host {
+        -webkit-user-select: none;
+      };
+      .node {
+        stroke: #fff;
+        stroke-width: 1.5px;
+      }
+      .link {
+        stroke: #999;
+        stroke-opacity: .6;
+      }
+      .node text {
+        font: 15px helvetica;
+      }
+    </style>
+    Number of nodes is {{nodes.length}}. Number of links is {{links.length}}.<br>
+    <svg id="mysvg" width="{{width}}" height="{{height}}"></svg>
+  </template>
+  <script>
+    Polymer("document-graph", {
+      width: 1000,
+      height: 1000,
+      nodes: [],
+      links: [],
+      observe: {
+        "nodes" : "nodesChanged",
+        "links" : "linksChanged"
+      },
+      ready: function() {
+        draw(this.$.mysvg, { nodes: this.nodes, links: this.links });
+      },
+      nodesChanged: function(oldValue, newValue) {
+        draw(this.$.mysvg, { nodes: newValue, links: this.links });
+      },
+      linksChanged: function(oldValue, newValue) {
+        draw(this.$.mysvg, { nodes: this.nodes, links: newValue });
+      }
+    });
+    function draw(el, dataset) {
+      console.log("drawing...");
+
+      var svg = d3.select(el);
+      var width = svg.attr("width");
+      var height = svg.attr("height");
+
+      svg.selectAll("*").remove();
+
+      var force = d3.layout.force()
+        .nodes(dataset.nodes)
+        .links(dataset.links)
+        .charge(-200)
+        .linkDistance(200)
+        .size([width, height])
+        .start();
+
+
+      var link = svg.selectAll(".link")
+        .data(dataset.links)
+        .enter()
+        .append("line")
+        .attr("class", "link"); 
+
+      var node_g = svg.selectAll(".node")
+        .data(dataset.nodes)
+        .enter()
+        .append("g")
+        .attr("class", "node")
+        .call(force.drag);
+
+      var node = node_g.append("circle")
+        .attr("r", 10)
+        .style("fill", "blue");
+
+      var title = node_g.append("text")
+        .attr("dx", 10)
+        .attr("dy", ".35em")
+        .text(function(d) { return d.title + "(" + d.year + ")"; })
+        .style("stroke", "gray");
+
+      function yByYear(d) {
+        var margin = height / 10;
+        var minYear = d3.min(dataset.nodes, function(d) {
+                        return d.year;
+                      });
+        if (typeof(d.year) !== "undefined") {
+          if (d.year <= minYear) {
+            return margin;
+          } else {
+            return (d.year - minYear) / (2015 - minYear) * (height - 2 * margin);
+          }
+        } else {
+          return height - margin;
+        }
+      }
+
+      force.on("tick", function() {
+        link.attr("x1", function(d) { return d.source.x; })
+          .attr("y1", function(d) { return d.source.y; })
+          .attr("x2", function(d) { return d.target.x; })
+          .attr("y2", function(d) { return d.target.y; });
+
+        node.attr("cx", function(d) { return d.x; })
+          .attr("cy", yByYear);
+
+        title.attr("x", function(d) { return d.x })
+          .attr("y", yByYear);
+      });
+
+    }//end draw
+  </script>
+</polymer-element>

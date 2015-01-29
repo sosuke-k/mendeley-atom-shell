@@ -1,9 +1,15 @@
+#log
+*.log
+
 # gulp-atom
 cache/
 release/
 
 # npm
 node_modules/
+
+# dest
+src/dest/
 
 # src
 src/node_modules/
