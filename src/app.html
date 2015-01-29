@@ -3,8 +3,8 @@
     <title>Mendeley with Polymer</title>
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
     <script src="bower_components/webcomponentsjs/webcomponents.js"></script>
-    <link rel="import" href="bower_components/core-scaffold/core-scaffold.html">
-    <link rel="import" href="my_components/document-list.html">
+    <link rel="import" href="bower_components/paper-progress/paper-progress.html">
+    <link rel="import" href="my_components/document-application.html">
 
     <style>
       html,body {
@@ -20,20 +20,22 @@
     </style>
   </head>
   <body>
-    <core-scaffold>
-      <core-header-panel navigation flex mode="seamed">
-        <core-toolbar>Application</core-toolbar>
-        <core-menu theme="core-light-theme">
-          <document-list show="all"></document-list>
-        </core-menu>
-      </core-header-panel>
-      <div tool>Title</div>
-      <div>Main content goes here...</div>
-    </core-scaffold>
-    
+
+    <document-application></document-application>
+    <paper-progress value="0" indeterminate>
+      <script type="text/javascript">
+        function startProgress() {
+          document.querySelector('paper-progress').indeterminate = true;
+        }
+        function stopProgress() {
+          document.querySelector('paper-progress').indeterminate = false;
+        }
+      </script>
+    </paper-progress value="0" indeterminate>
     <script type="text/javascript">
-      addEventListener('polymer-ready', function() {
-        console.log("polymer-ready");
+      startProgress();
+      document.querySelector('document-application').addEventListener('paper-loaded', function(e) {
+        stopProgress();
       });
     </script>
   </body>

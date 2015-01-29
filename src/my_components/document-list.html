@@ -2,7 +2,7 @@
 <link rel="import" href="document-service.html">
 <link rel="import" href="document-card.html">
 
-<polymer-element name="document-list" attributes="show" noscript>
+<polymer-element name="document-list" attributes="show docs">
   <template>
     <style>
     :host {
@@ -14,12 +14,12 @@
     }
     </style>
 
-    <document-service id="service" documents="{{documents}}">
+    <document-service id="service" documents="{{docs}}" on-service-loaded="{{documentLoaded}}">
     </document-service>
 
     <div layout vertical center>
 
-      <template repeat="{{document in documents}}">
+      <template repeat="{{document in docs}}">
         <document-card>
           <document-title>{{document.title}}</document-title>
           <template repeat="{{author in document.authors}}">
@@ -33,4 +33,11 @@
 
     </div>
   </template>
+  <script>
+    Polymer("document-list", {
+      documentLoaded: function() {
+        this.fire("list-loaded");
+      }
+    });
+  </script>
 </polymer-element>

@@ -48,6 +48,7 @@
       console.log('postsLoaded');
       // Make a copy of the loaded data
       this.documents = this.$.ajax.response.slice(0);
+      this.fire("service-loaded");
     },
     errorListener: function() {
       alert('error');
