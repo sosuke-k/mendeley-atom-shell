@@ -1,13 +1,13 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="../bower_components/core-scaffold/core-scaffold.html">
+<link rel="import" href="../my_components/my-scaffold.html">
 <link rel="import" href="../my_components/document-list.html">
 <link rel="import" href="../my_components/document-graph.html">
 
 <polymer-element name="document-application">
   <template>
-    <core-scaffold>
+    <my-scaffold>
       <core-header-panel navigation flex mode="seamed">
-        <core-toolbar>Document</core-toolbar>
+        <core-toolbar><!-- Document --></core-toolbar>
         <core-menu theme="core-light-theme">
           <document-list show="all" docs="{{docs}}" on-list-loaded="{{loadedListner}}"></document-list>
         </core-menu>
@@ -16,7 +16,7 @@
       <div>
         <document-graph nodes="{{nodes}}"></document-graph>
       </div>
-    </core-scaffold>
+    </my-scaffold>
   </template>
   <script>
     Polymer("document-application", {
