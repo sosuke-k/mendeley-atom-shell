@@ -1,12 +1,10 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="../bower_components/core-drag-drop/core-drag-drop.html">
 <link rel="import" href="../my_components/my-scaffold.html">
 <link rel="import" href="../my_components/document-list.html">
 <link rel="import" href="../my_components/document-graph.html">
 
 <polymer-element name="document-application">
   <template>
-    <core-drag-drop></core-drag-drop>
     <my-scaffold>
       
       <document-list navigation show="all" docs="{{docs}}" on-list-loaded="{{loadedListner}}" on-drag-card={{onDragCard}}></document-list>
