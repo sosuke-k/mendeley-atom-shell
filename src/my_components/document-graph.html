@@ -31,8 +31,11 @@
   </template>
   <script>
     Polymer("document-graph", {
-      width: 1000,
+      width: 1200,
       height: 1000,
+      margin: 50,
+      minYear: 1995,
+      maxYear: 2015,
       stage: null,
       force: null,
       nodes: [],
@@ -48,6 +51,18 @@
         console.log("document-graph ready");
 
         this.stage = d3.select(this.$.mysvg);
+
+        var years = this.maxYear - this.minYear;
+        var rectHeight = (this.height - this.margin * 2) / years;
+        for(var i = 0; i < years; i++) {
+          var color = "rgba(0,0,0,0)";
+          if (i % 2 == 1) color = "rgba(0,0,0,0.1)";
+          this.stage.append("rect")
+            .attr("width", this.width)
+            .attr("height", rectHeight)
+            .attr("y", rectHeight * i + this.margin - rectHeight / 2)
+            .style("fill", color);
+        }
         
         this.force = d3.layout.force()
           .nodes(this.nodes)
@@ -128,18 +143,14 @@
       nodeGroup.exit().remove();
 
       function yByYear(d) {
-        var margin = el.height / 10;
-        var minYear = d3.min(el.nodes, function(n) {
-                        return n.year;
-                      });
         if (typeof(d.year) !== "undefined") {
-          if (d.year <= minYear) {
-            return margin;
+          if (d.year <= el.minYear) {
+            return el.margin;
           } else {
-            return (d.year - minYear) / (2015 - minYear) * (el.height - 2 * margin);
+            return (d.year - el.minYear) / (el.maxYear - el.minYear) * (el.height - 2 * el.margin);
           }
         } else {
-          return el.height - margin;
+          return el.height - el.margin;
         }
       }
       
