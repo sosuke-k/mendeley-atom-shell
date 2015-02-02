@@ -1,5 +1,7 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
-<script src="../vendor/d3.js" charset="utf-8"></script>
+<!-- <script src="../vendor/d3.js" charset="utf-8"></script> -->
+<script type="text/javascript" src="../bower_components/d3/d3.js"></script>
+<script type="text/javascript" src="../bower_components/d3-tip/index.js"></script>
 
 <polymer-element name="document-graph" attributes="nodesAdded links">
 	
@@ -25,12 +27,17 @@
       .node text {
         font: 15px helvetica;
       }
+      d3-tip {
+        line-height: 1;
+        color: black;
+      }
     </style>
     Number of nodes is {{nodes.length}}. Number of links is {{links.length}}.<br>
     <svg id="mysvg" width="{{width}}" height="{{height}}"></svg>
   </template>
   <script>
     Polymer("document-graph", {
+      tip: null,
       width: 1200,
       height: 1000,
       margin: 50,
@@ -51,6 +58,14 @@
         console.log("document-graph ready");
 
         this.stage = d3.select(this.$.mysvg);
+
+        this.tip = d3.tip()
+          .attr('class', 'd3-tip')
+          .offset([-10, 0])
+          .html(function (d) {
+            return  d.title;
+          });
+        this.stage.call(this.tip);
 
         var years = this.maxYear - this.minYear;
         var rectHeight = (this.height - this.margin * 2) / years;
@@ -127,7 +142,9 @@
           console.log("mouseup in node");
           // ドラッグしながらノードの上にカーソル移動後、離しても発火しない
         })
-        .call(el.force.drag);
+        .call(el.force.drag)
+        .on('mouseover', el.tip.show) //Added
+        .on('mouseout', el.tip.hide); //Added 
 
       var node = nodeEnterGroup.append("circle")
         .attr("r", 10)

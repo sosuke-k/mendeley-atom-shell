@@ -19,6 +19,7 @@
     "core-transition": "Polymer/core-transition#~0.5.4",
     "core-scaffold": "Polymer/core-scaffold#~0.5.4",
     "core-ajax": "Polymer/core-ajax#~0.5.4",
-    "core-iconset": "Polymer/core-iconset#~0.5.4"
+    "core-iconset": "Polymer/core-iconset#~0.5.4",
+    "d3-tip": "~0.6.6"
   }
 }
