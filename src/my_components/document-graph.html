@@ -1,15 +1,21 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <script src="../vendor/d3.js" charset="utf-8"></script>
 
-<polymer-element name="document-graph" attributes="nodes links">
+<polymer-element name="document-graph" attributes="nodesAdded links">
 	
   <template>
     <style>
       :host {
         -webkit-user-select: none;
       };
-      .node {
-        stroke: #fff;
+      svg {
+        background-color: floralwhite;
+      }
+      #mysvg {
+        background-color: floralwhite;
+      }
+      .node circle{
+        stroke: #eee;
         stroke-width: 1.5px;
       }
       .link {
@@ -27,92 +33,181 @@
     Polymer("document-graph", {
       width: 1000,
       height: 1000,
+      stage: null,
+      force: null,
       nodes: [],
       links: [],
+      handing: false,
+      handedNode: null,
+      handedLink: null,
       observe: {
-        "nodes" : "nodesChanged",
+        "nodesAdded" : "nodesAddedChanged",
         "links" : "linksChanged"
       },
       ready: function() {
-        draw(this.$.mysvg, { nodes: this.nodes, links: this.links });
+        console.log("document-graph ready");
+
+        this.stage = d3.select(this.$.mysvg);
+        
+        this.force = d3.layout.force()
+          .nodes(this.nodes)
+          .links(this.links)
+          .charge(-200)
+          .linkDistance(200)
+          .size([this.width, this.height]);
+
+        update(this);
       },
-      nodesChanged: function(oldValue, newValue) {
-        draw(this.$.mysvg, { nodes: newValue, links: this.links });
+      nodesAddedChanged: function(oldValue, newValue) {
+        console.log("nodeChanged");
+        Array.prototype.push.apply(this.nodes,newValue);
+        update(this);
       },
       linksChanged: function(oldValue, newValue) {
-        draw(this.$.mysvg, { nodes: this.nodes, links: newValue });
+        console.log("linksChanged");
+        update(this);
       }
     });
-    function draw(el, dataset) {
-      console.log("drawing...");
+    
+    function update(el) {
+      console.log("updating...");
 
-      var svg = d3.select(el);
-      var width = svg.attr("width");
-      var height = svg.attr("height");
+      var link = el.stage.selectAll(".link")
+        .data(el.links, function(l) {
+          // ひとまず自動付加のindexとindexの組をキーに。
+          var sourceIndex = (typeof(l.source) == "object") ? l.source.index : l.source;
+          var targetIndex = (typeof(l.target) == "object") ? l.target.index : l.target;
+          var key = sourceIndex + "-" + targetIndex;
+          return key;
+        });
 
-      svg.selectAll("*").remove();
-
-      var force = d3.layout.force()
-        .nodes(dataset.nodes)
-        .links(dataset.links)
-        .charge(-200)
-        .linkDistance(200)
-        .size([width, height])
-        .start();
-
-
-      var link = svg.selectAll(".link")
-        .data(dataset.links)
-        .enter()
+      link.enter()
         .append("line")
-        .attr("class", "link"); 
+        .attr("class", "link");
 
-      var node_g = svg.selectAll(".node")
-        .data(dataset.nodes)
-        .enter()
+      link.exit().remove();
+
+      var nodeGroup = el.stage.selectAll(".node")
+        // ひとまず自動付加のindexをキーに。
+        .data(el.nodes);
+
+      var nodeEnterGroup = nodeGroup.enter()
         .append("g")
         .attr("class", "node")
-        .call(force.drag);
+        .on("mousedown", function(d) {
+          console.log('onmousedown');
 
-      var node = node_g.append("circle")
+          if (event.altKey) {
+            el.handing = true;
+            el.handedNode = d3.select(this).on("mousedown.drag", null);
+            el.handedLink = el.stage.append("line")
+              .attr("class", "link handed")
+              .attr("x1", d.px)
+              .attr("y1", yByYear(d))
+              .attr("x2", d3.mouse(this)[0])
+              .attr("y2", d3.mouse(this)[1]);
+          }
+        })
+        .on("mouseup", function(d) {
+          console.log("mouseup in node");
+          // ドラッグしながらノードの上にカーソル移動後、離しても発火しない
+        })
+        .call(el.force.drag);
+
+      var node = nodeEnterGroup.append("circle")
         .attr("r", 10)
         .style("fill", "blue");
 
-      var title = node_g.append("text")
+      var title = nodeEnterGroup.append("text")
         .attr("dx", 10)
         .attr("dy", ".35em")
-        .text(function(d) { return d.title + "(" + d.year + ")"; })
+        // .text(function(d) { return d.title + "(" + d.year + ")"; })
+        .text(function(d) { return d.year; })
         .style("stroke", "gray");
 
+      nodeGroup.exit().remove();
+
       function yByYear(d) {
-        var margin = height / 10;
-        var minYear = d3.min(dataset.nodes, function(d) {
-                        return d.year;
+        var margin = el.height / 10;
+        var minYear = d3.min(el.nodes, function(n) {
+                        return n.year;
                       });
         if (typeof(d.year) !== "undefined") {
           if (d.year <= minYear) {
             return margin;
           } else {
-            return (d.year - minYear) / (2015 - minYear) * (height - 2 * margin);
+            return (d.year - minYear) / (2015 - minYear) * (el.height - 2 * margin);
           }
         } else {
-          return height - margin;
+          return el.height - margin;
         }
       }
-
-      force.on("tick", function() {
+      
+      el.force.on("tick", function() {
+        
         link.attr("x1", function(d) { return d.source.x; })
-          .attr("y1", function(d) { return d.source.y; })
+          .attr("y1", function(d) { return yByYear(d.source); })
           .attr("x2", function(d) { return d.target.x; })
-          .attr("y2", function(d) { return d.target.y; });
+          .attr("y2", function(d) { return yByYear(d.target); });
 
-        node.attr("cx", function(d) { return d.x; })
-          .attr("cy", yByYear);
+        var nodeCircle = el.stage.selectAll(".node circle");
+        nodeCircle.attr("cx", function(d) { return d.x; })
+                  .attr("cy", yByYear);
 
-        title.attr("x", function(d) { return d.x })
-          .attr("y", yByYear);
+        var nodeTitle = el.stage.selectAll(".node text");
+        nodeTitle.attr("x", function(d) { return d.x })
+                  .attr("y", yByYear);
       });
 
-    }//end draw
+      el.stage.on("mousemove", function() {
+        if (el.handing) {
+          if (el.handedLink != null) {
+            el.handedLink.attr("x1", el.handedNode.data()[0].px)
+              .attr("y1", yByYear(el.handedNode.data()[0]))
+              .attr("x2", d3.mouse(this)[0])
+              .attr("y2", d3.mouse(this)[1]);
+          }
+        }
+      });
+
+      el.stage.on("mouseup", function() {
+        console.log('mouseup in svg');
+        console.log("event.altKey = " + event.altKey);
+        if(el.handing) {
+          el.handing = false;
+
+          var handedLink = el.stage.selectAll(".link.handed");
+          handedLink.remove();
+
+          el.stage.selectAll(".node").call(el.force.drag);
+
+          var mouseP = d3.mouse(this);
+          var nodeData = el.stage.selectAll(".node circle").data();
+          var handedNode = el.handedNode.data()[0];
+
+          var nearestIndex = handedNode.index;
+          var nearestDistance = Math.sqrt(el.width * el.width + el.height * el.height);
+
+          for (var i = 0; i < nodeData.length; i++) {
+            var x1 = nodeData[i].x;
+            var y1 = yByYear(nodeData[i]);
+            var x2 = mouseP[0];
+            var y2 = mouseP[1];
+            var distance = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+
+            // ノードを削除する機能追加時に以下の条件式も要変更
+            if (nearestDistance > distance && i != handedNode.index) {
+              nearestDistance = distance;
+              nearestIndex = nodeData[i].index;
+            }
+          }
+
+          el.links.push({ source: handedNode.index, target: nearestIndex });
+        }
+      });
+
+      el.force.start();
+
+    }//end update
   </script>
 </polymer-element>
