@@ -20,3 +20,6 @@ src/api/my_documents.json
 
 # config
 src/config/
+
+# 汗
+src/my_components/document-graph-old.html
