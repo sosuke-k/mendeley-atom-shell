@@ -20,6 +20,7 @@
     "core-scaffold": "Polymer/core-scaffold#~0.5.4",
     "core-ajax": "Polymer/core-ajax#~0.5.4",
     "core-iconset": "Polymer/core-iconset#~0.5.4",
-    "d3-tip": "~0.6.6"
+    "d3-tip": "~0.6.6",
+    "core-drag-drop": "Polymer/core-drag-drop#~0.5.4"
   }
 }

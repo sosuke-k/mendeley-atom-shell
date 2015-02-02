@@ -95,7 +95,7 @@ To have the content fit to the main area, use `fit` attribute.
     
   </style>
 
-  <core-drawer-panel id="drawerPanel" drawerWidth="{{drawerWidth}}" responsiveWidth="{{responsiveWidth}}">
+  <core-drawer-panel id="drawerPanel" drawerWidth="{{drawerWidth}}" responsiveWidth="{{responsiveWidth}}" disableSwipe="{{disableSwipe}}" disableEdgeSwipe="{{disableEdgeSwipe}}">
 
     <div vertical layout drawer>
       <content select="[navigation], nav"></content>
@@ -120,12 +120,14 @@ To have the content fit to the main area, use `fit` attribute.
 
   Polymer('my-scaffold', {
     defaultWidth: '',
+    disableSwipe: true,
+    disableEdgeSwipe: true,
     
     publish: {
       
       drawerWidth: '256px',
          
-      responsiveWidth: '800px',
+      responsiveWidth: '720px',
       
       /**
        * Used to control the header and scrolling behaviour of `core-header-panel`

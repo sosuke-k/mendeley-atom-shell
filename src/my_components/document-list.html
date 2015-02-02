@@ -8,9 +8,8 @@
     :host {
       display: block;
       width: 100%;
-    }
-    document-card {
-      margin-bottom: 30px;
+      padding-top: 10px;
+      overflow: scroll;
     }
     </style>
 
@@ -20,7 +19,7 @@
     <div layout vertical center>
 
       <template repeat="{{document in docs}}">
-        <document-card>
+        <document-card documentId="{{document.id}}" on-drag-start="{{dragStartCard}}">
           <document-title>{{document.title}}</document-title>
           <template repeat="{{author in document.authors}}">
             <author-first-name>{{author.first_name}}</author-first-name>
@@ -37,6 +36,10 @@
     Polymer("document-list", {
       documentLoaded: function() {
         this.fire("list-loaded");
+      },
+      dragStartCard: function(e) {
+        console.log("document id is " + e.detail + "in document-list");
+        this.fire("drag-card", e.detail);
       }
     });
   </script>
