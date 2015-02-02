@@ -3,7 +3,7 @@
 <script type="text/javascript" src="../bower_components/d3/d3.js"></script>
 <script type="text/javascript" src="../bower_components/d3-tip/index.js"></script>
 
-<polymer-element name="document-graph" attributes="nodesAdded links">
+<polymer-element name="document-graph" attributes="nodesAdded links draggingCard">
 	
   <template>
     <style>
@@ -12,9 +12,13 @@
       };
       svg {
         background-color: floralwhite;
+        position: absolute;
+        top: 0;
       }
       #mysvg {
         background-color: floralwhite;
+        position: absolute;
+        top: 0;
       }
       .node circle{
         stroke: #eee;
@@ -31,9 +35,15 @@
         line-height: 1;
         color: black;
       }
+      #info {
+        position: absolute;
+        top: 0;
+      }
     </style>
-    Number of nodes is {{nodes.length}}. Number of links is {{links.length}}.<br>
     <svg id="mysvg" width="{{width}}" height="{{height}}"></svg>
+    <div id="info">
+      Number of nodes is {{nodes.length}}. Number of links is {{links.length}}.
+    </div>
   </template>
   <script>
     Polymer("document-graph", {
@@ -89,8 +99,14 @@
         update(this);
       },
       nodesAddedChanged: function(oldValue, newValue) {
-        console.log("nodeChanged");
-        Array.prototype.push.apply(this.nodes,newValue);
+        var addArray = [];
+        if (Array.isArray(newValue)) {
+          addArray = newValue;
+        } else {
+          addArray.push(newValue);
+        }
+        // Array.prototype.push.apply(a, b)において a, b はどちらも配列でなければ。
+        Array.prototype.push.apply(this.nodes,addArray);
         update(this);
       },
       linksChanged: function(oldValue, newValue) {
@@ -144,7 +160,7 @@
         })
         .call(el.force.drag)
         .on('mouseover', el.tip.show) //Added
-        .on('mouseout', el.tip.hide); //Added 
+        .on('mouseout', el.tip.hide); //Added
 
       var node = nodeEnterGroup.append("circle")
         .attr("r", 10)

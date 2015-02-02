@@ -6,23 +6,36 @@
 <polymer-element name="document-application">
   <template>
     <my-scaffold>
-      <core-header-panel navigation flex mode="seamed">
-        <core-toolbar><!-- Document --></core-toolbar>
-        <core-menu theme="core-light-theme">
-          <document-list show="all" docs="{{docs}}" on-list-loaded="{{loadedListner}}"></document-list>
-        </core-menu>
-      </core-header-panel>
+      
+      <document-list navigation show="all" docs="{{docs}}" on-list-loaded="{{loadedListner}}" on-drag-card={{onDragCard}}></document-list>
+      
       <div tool>Graph</div>
       <div>
-        <document-graph nodesAdded="{{nodes}}"></document-graph>
+        <document-graph nodesAdded="{{nodes}}" draggingCard={{draggingCard}}></document-graph>
       </div>
     </my-scaffold>
   </template>
   <script>
+    addEventListener('dragend', function(e) {
+      var app = e.target;
+      if (app.draggingCard) {
+        app.draggingCard = false;
+        app.nodes = app.draggedDocument;
+      }
+    });
+
     Polymer("document-application", {
+      draggingCard: false,
+      draggedDocument: null,
       loadedListner: function() {
-        this.nodes = this.docs;
+        // this.nodes = this.docs;
         this.fire("paper-loaded", this.docs);
+      },
+      onDragCard: function(e) {
+        this.draggingCard = true;
+        this.draggedDocument = this.docs.filter(function(d) {
+          return d.id == e.detail;
+        })[0];
       }
     });
   </script>
