@@ -5,11 +5,11 @@
 
 <polymer-element name="document-application">
   <template>
-    <my-scaffold>
+    <my-scaffold on-save="{{save}}">
       
       <document-list navigation show="all" docs="{{docs}}" on-list-loaded="{{loadedListner}}" on-drag-card={{onDragCard}}></document-list>
       
-      <div tool>Graph</div>
+      <span tool>Graph</span>
       <div>
         <document-graph nodesAdded="{{nodes}}" draggingCard={{draggingCard}}></document-graph>
       </div>
@@ -36,6 +36,11 @@
         this.draggedDocument = this.docs.filter(function(d) {
           return d.id == e.detail;
         })[0];
+      },
+      save: function() {
+        // console.log("save");
+        var graph = this.querySelector("document-graph");
+        console.log(graph);
       }
     });
   </script>

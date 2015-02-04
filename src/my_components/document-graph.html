@@ -69,13 +69,17 @@
 
         this.stage = d3.select(this.$.mysvg);
 
-        this.tip = d3.tip()
-          .attr('class', 'd3-tip')
-          .offset([-10, 0])
-          .html(function (d) {
-            return  d.title;
-          });
-        this.stage.call(this.tip);
+        try {
+          this.tip = d3.tip()
+            .attr('class', 'd3-tip')
+            .offset([-10, 0])
+            .html(function (d) {
+              return  d.title;
+            });
+          this.stage.call(this.tip);
+        } catch(e) {
+          console.log(e);
+        }
 
         var years = this.maxYear - this.minYear;
         var rectHeight = (this.height - this.margin * 2) / years;
@@ -87,6 +91,11 @@
             .attr("height", rectHeight)
             .attr("y", rectHeight * i + this.margin - rectHeight / 2)
             .style("fill", color);
+          this.stage.append("text")
+            .attr("x", 10)
+            .attr("y", rectHeight * i + this.margin)
+            .text(this.minYear + i + 1)
+            .style("fill", "gray");
         }
         
         this.force = d3.layout.force()
@@ -112,6 +121,9 @@
       linksChanged: function(oldValue, newValue) {
         console.log("linksChanged");
         update(this);
+      },
+      save: function() {
+        console.log("save");
       }
     });
     
@@ -152,15 +164,26 @@
               .attr("y1", yByYear(d))
               .attr("x2", d3.mouse(this)[0])
               .attr("y2", d3.mouse(this)[1]);
+          } else {
+            var links = el.stage.selectAll(".link").data();
+            console.log("links.length = " + links.length);
+            var refNode = links.filter(function(l) {
+              return l.source.index == d.index;
+            });
+            // console.log(JSON.stringify(refNode));
+            alert(JSON.stringify(refNode));
           }
         })
         .on("mouseup", function(d) {
           console.log("mouseup in node");
           // ドラッグしながらノードの上にカーソル移動後、離しても発火しない
         })
-        .call(el.force.drag)
-        .on('mouseover', el.tip.show) //Added
-        .on('mouseout', el.tip.hide); //Added
+        .call(el.force.drag);
+
+      if (el.tip != null) {
+        nodeEnterGroup.on('mouseover', el.tip.show)
+                      .on('mouseout', el.tip.hide);
+      }
 
       var node = nodeEnterGroup.append("circle")
         .attr("r", 10)

@@ -21,10 +21,10 @@
       <template repeat="{{document in docs}}">
         <document-card documentId="{{document.id}}" on-drag-start="{{dragStartCard}}">
           <document-title>{{document.title}}</document-title>
-          <template repeat="{{author in document.authors}}">
+          <!-- <template repeat="{{author in document.authors}}">
             <author-first-name>{{author.first_name}}</author-first-name>
             <author-last-name>{{author.last_name}}</author-last-name>
-          </template>
+          </template> -->
           <year>{{document.year}}</year>
           <abstract>{{document.abstract}}</abstract>
         </document-card>
