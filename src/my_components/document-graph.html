@@ -66,45 +66,7 @@
       },
       ready: function() {
         console.log("document-graph ready");
-
-        this.stage = d3.select(this.$.mysvg);
-
-        try {
-          this.tip = d3.tip()
-            .attr('class', 'd3-tip')
-            .offset([-10, 0])
-            .html(function (d) {
-              return  d.title;
-            });
-          this.stage.call(this.tip);
-        } catch(e) {
-          console.log(e);
-        }
-
-        var years = this.maxYear - this.minYear;
-        var rectHeight = (this.height - this.margin * 2) / years;
-        for(var i = 0; i < years; i++) {
-          var color = "rgba(0,0,0,0)";
-          if (i % 2 == 1) color = "rgba(0,0,0,0.1)";
-          this.stage.append("rect")
-            .attr("width", this.width)
-            .attr("height", rectHeight)
-            .attr("y", rectHeight * i + this.margin - rectHeight / 2)
-            .style("fill", color);
-          this.stage.append("text")
-            .attr("x", 10)
-            .attr("y", rectHeight * i + this.margin)
-            .text(this.minYear + i + 1)
-            .style("fill", "gray");
-        }
-        
-        this.force = d3.layout.force()
-          .nodes(this.nodes)
-          .links(this.links)
-          .charge(-200)
-          .linkDistance(200)
-          .size([this.width, this.height]);
-
+        init(this);
         update(this);
       },
       nodesAddedChanged: function(oldValue, newValue) {
@@ -126,6 +88,49 @@
         console.log("save");
       }
     });
+
+    function init(el) {
+      el.stage = d3.select(el.$.mysvg);
+      el.$.mysvg.attributes["width"] = window.innerWidth;
+      el.width = window.innerWidth;
+
+      try {
+        el.tip = d3.tip()
+          .attr('class', 'd3-tip')
+          .offset([-10, 0])
+          .html(function (d) {
+            return  d.title;
+          });
+        el.stage.call(el.tip);
+      } catch(e) {
+        console.log(e);
+      }
+
+      var years = el.maxYear - el.minYear;
+      var rectHeight = (el.height - el.margin * 2) / years;
+      for(var i = 0; i < years; i++) {
+        var color = "rgba(0,0,0,0)";
+        if (i % 2 == 1) color = "rgba(0,0,0,0.1)";
+        el.stage.append("rect")
+          .attr("width", el.width)
+          .attr("height", rectHeight)
+          .attr("y", rectHeight * i + el.margin - rectHeight / 2)
+          .style("fill", color);
+        el.stage.append("text")
+          .attr("x", 10)
+          .attr("y", rectHeight * i + el.margin)
+          .text(el.minYear + i + 1)
+          .style("fill", "gray");
+      }
+      
+      el.force = d3.layout.force()
+        .nodes(el.nodes)
+        .links(el.links)
+        .charge(-200)
+        .linkDistance(200)
+        .size([el.width, el.height]);
+
+    }
     
     function update(el) {
       console.log("updating...");
@@ -165,18 +170,27 @@
               .attr("x2", d3.mouse(this)[0])
               .attr("y2", d3.mouse(this)[1]);
           } else {
-            var links = el.stage.selectAll(".link").data();
-            console.log("links.length = " + links.length);
-            var refNode = links.filter(function(l) {
-              return l.source.index == d.index;
-            });
-            // console.log(JSON.stringify(refNode));
-            alert(JSON.stringify(refNode));
+            console.log("event.altKey = " + event.altKey);
           }
         })
         .on("mouseup", function(d) {
           console.log("mouseup in node");
           // ドラッグしながらノードの上にカーソル移動後、離しても発火しない
+        })
+        .on("click", function(d) {
+          console.log("click in node");
+          var links = el.stage.selectAll(".link").data();
+          console.log("links.length = " + links.length);
+          var refNode = links.filter(function(l) {
+            return l.source.index == d.index;
+          });
+          var refferedNodes = [];
+          for (var i = 0; i < refNode.length; i++) {
+            var refferedNode = {};
+            refferedNode.title = refNode[i].target.title;
+            refferedNodes.push(refferedNode);
+          }
+          console.log(JSON.stringify(refferedNodes));
         })
         .call(el.force.drag);
 
@@ -272,6 +286,12 @@
           el.links.push({ source: handedNode.index, target: nearestIndex });
         }
       });
+
+      // addEventListener("resize", function() {
+      //   console.log("resize");
+      //   init(el);
+      //   update(el);
+      // });
 
       el.force.start();
 
