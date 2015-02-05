@@ -20,6 +20,9 @@
         position: absolute;
         top: 0;
       }
+      .node.no-active {
+        opacity: 0.1;
+      }
       .node circle{
         stroke: #eee;
         stroke-width: 1.5px;
@@ -27,6 +30,9 @@
       .link {
         stroke: #999;
         stroke-opacity: .6;
+      }
+      .link.no-active {
+        opacity: 0.1;
       }
       .node text {
         font: 15px helvetica;
@@ -191,6 +197,31 @@
             refferedNodes.push(refferedNode);
           }
           console.log(JSON.stringify(refferedNodes));
+        })
+        .on("dblclick", function(d) {
+          console.log("dblclick");
+          if (el.stage.selectAll(".node.active").data().filter(function(n) {
+            return n.index == d.index;
+          }).length > 0 ) {
+            el.stage.selectAll(".node")
+              .classed("no-active", false)
+              .classed("active", false);
+            el.stage.selectAll(".link")
+              .classed("no-active", false)
+              .classed("active", false);
+            el.stage.selectAll(".link")
+              .classed("no-active", false);
+          } else {
+            el.stage.selectAll(".node")
+              .classed("no-active", function(n) {
+                return n.index != d.index;
+              })
+              .classed("active", function(n) {
+                return n.index == d.index;
+              });
+            el.stage.selectAll(".link")
+              .classed("no-active", true);
+          }
         })
         .call(el.force.drag);
 
